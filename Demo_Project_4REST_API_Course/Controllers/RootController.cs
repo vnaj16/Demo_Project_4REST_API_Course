@@ -9,6 +9,7 @@ namespace Demo_Project_4REST_API_Course.Controllers
 {
     [ApiController]
     [Route("/")]
+    [ApiVersion("1.0")]
     public class RootController : ControllerBase
     {   
         [HttpGet(Name = nameof(GetRoot))]

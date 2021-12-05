@@ -5,6 +5,7 @@ namespace Demo_Project_4REST_API_Course.Controllers
 {
     [Route("/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class CyclesController : ControllerBase
     {
         [HttpGet(Name = nameof(GetCycles))]

@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NSwag.AspNetCore;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Demo_Project_4REST_API_Course.Filters;
 
 namespace Demo_Project_4REST_API_Course
 {
@@ -26,9 +28,27 @@ namespace Demo_Project_4REST_API_Course
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<JsonExceptionFilter>();
+                options.Filters.Add<RequireHttpsOrCloseAttribute>();
+            });
 
             services.AddRouting(options => options.LowercaseUrls = true);
+
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.ApiVersionReader = new MediaTypeApiVersionReader();
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionSelector = new CurrentImplementationApiVersionSelector(options);
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowMyApp", policy => policy.AllowAnyOrigin());
+            });
 
             // Register the Swagger services
             services.AddSwaggerDocument();
@@ -45,8 +65,14 @@ namespace Demo_Project_4REST_API_Course
                 app.UseOpenApi();
                 app.UseSwaggerUi3();
             }
+            else
+            {
+                app.UseHsts();
+            }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+
+            app.UseCors("AllowMyApp");
 
             app.UseRouting();
 
