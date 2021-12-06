@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,7 +14,9 @@ namespace Demo_Project_4REST_API_Course
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            InitializeDatabase(host);
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -22,5 +25,21 @@ namespace Demo_Project_4REST_API_Course
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        public static void InitializeDatabase(IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    SeedData.InitializeDatabaseAsync(services).Wait();
+                }
+                catch (Exception ex)
+                {
+                    services.GetRequiredService<ILogger<Program>>().LogError(ex.Message);
+                }
+            }
+        }
     }
 }

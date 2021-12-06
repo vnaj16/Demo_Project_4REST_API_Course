@@ -13,6 +13,10 @@ using System.Threading.Tasks;
 using NSwag.AspNetCore;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Demo_Project_4REST_API_Course.Filters;
+using Microsoft.EntityFrameworkCore;
+using Demo_Project_4REST_API_Course.Services;
+using Demo_Project_4REST_API_Course.Services.Interfaces;
+using Demo_Project_4REST_API_Course.Infrastructure;
 
 namespace Demo_Project_4REST_API_Course
 {
@@ -28,11 +32,16 @@ namespace Demo_Project_4REST_API_Course
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ControlNotasDbContext>(options => options.UseInMemoryDatabase("controlnotasdb"));
+
             services.AddControllers(options =>
             {
                 options.Filters.Add<JsonExceptionFilter>();
                 options.Filters.Add<RequireHttpsOrCloseAttribute>();
             });
+
+            services.AddScoped<ICourseService,CourseService>();
+            services.AddScoped<ICycleService, CycleService>();
 
             services.AddRouting(options => options.LowercaseUrls = true);
 
@@ -52,6 +61,8 @@ namespace Demo_Project_4REST_API_Course
 
             // Register the Swagger services
             services.AddSwaggerDocument();
+            services.AddAutoMapper(
+                options => options.AddProfile<MappingProfile>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
