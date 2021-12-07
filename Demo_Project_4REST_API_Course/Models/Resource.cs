@@ -2,9 +2,9 @@
 
 namespace Demo_Project_4REST_API_Course.Models
 {
-    public abstract class Resource
+    public abstract class Resource : Link
     {
-        [JsonProperty(Order =-2)]
-        public string Href { get; set; }
+        [JsonIgnore]
+        public Link Self { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Demo_Project_4REST_API_Course.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -15,17 +16,11 @@ namespace Demo_Project_4REST_API_Course.Controllers
         [HttpGet(Name = nameof(GetRoot))]
         public IActionResult GetRoot()
         {
-            var reponse = new
+            var reponse = new RootResponse()
             {
-                href = Url.Link(nameof(GetRoot),null),
-                courses = new
-                {
-                    href = Url.Link(nameof(CoursesController.GetCourses), null),
-                },
-                cycles = new
-                {
-                    href = Url.Link(nameof(CyclesController.GetCycles), null),
-                }
+                Self =Link.To(nameof(GetRoot)),
+                Courses = Link.To(nameof(CoursesController.GetCourses)),
+                Cycles = Link.To(nameof(CyclesController.GetCycles))
             };
 
             return Ok(reponse);

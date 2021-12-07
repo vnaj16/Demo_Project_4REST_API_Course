@@ -38,6 +38,7 @@ namespace Demo_Project_4REST_API_Course
             {
                 options.Filters.Add<JsonExceptionFilter>();
                 options.Filters.Add<RequireHttpsOrCloseAttribute>();
+                options.Filters.Add<LinkRewritingFilter>();
             });
 
             services.AddScoped<ICourseService,CourseService>();
