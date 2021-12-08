@@ -33,5 +33,15 @@ namespace Demo_Project_4REST_API_Course.Models
                 Method = "GET",
                 Relations = null
             };
+
+
+        public static Link ToCollection(string routeName, object routeValues = null)
+            => new Link
+            {
+                RouteName = routeName,
+                RouteValues = routeValues,
+                Method = "GET",
+                Relations = new[] { "collection" }
+            };
     }
 }

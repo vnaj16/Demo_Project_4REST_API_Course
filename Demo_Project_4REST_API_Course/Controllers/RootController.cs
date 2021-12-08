@@ -19,8 +19,8 @@ namespace Demo_Project_4REST_API_Course.Controllers
             var reponse = new RootResponse()
             {
                 Self =Link.To(nameof(GetRoot)),
-                Courses = Link.To(nameof(CoursesController.GetCourses)),
-                Cycles = Link.To(nameof(CyclesController.GetCycles))
+                Courses = Link.ToCollection(nameof(CoursesController.GetAllCourses)),
+                Cycles = Link.ToCollection(nameof(CyclesController.GetAllCycles))
             };
 
             return Ok(reponse);

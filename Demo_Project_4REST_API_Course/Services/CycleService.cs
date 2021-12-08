@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Demo_Project_4REST_API_Course.Models;
 using Demo_Project_4REST_API_Course.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Demo_Project_4REST_API_Course.Services
@@ -9,13 +11,13 @@ namespace Demo_Project_4REST_API_Course.Services
     public class CycleService : ICycleService
     {
         private readonly ControlNotasDbContext _controlNotasDbContext;
-        private readonly IMapper mapper;
+        private readonly IConfigurationProvider _mappingConfiguration;
 
         public CycleService(ControlNotasDbContext controlNotasDbContext
-            , IMapper mapper)
+            , IConfigurationProvider mappingConfiguration)
         {
             _controlNotasDbContext = controlNotasDbContext;
-            this.mapper = mapper;
+            _mappingConfiguration = mappingConfiguration;
         }
 
         public async Task<Cycle> GetCycleAsync(int id)
@@ -28,7 +30,16 @@ namespace Demo_Project_4REST_API_Course.Services
                 return null;
             }
 
+            var mapper = _mappingConfiguration.CreateMapper();
             return mapper.Map<Cycle>(entity);
+        }
+
+        public async Task<IEnumerable<Cycle>> GetCyclesAsync()
+        {
+            var query = _controlNotasDbContext.Cycles
+                .ProjectTo<Cycle>(_mappingConfiguration);
+
+            return await query.ToArrayAsync();
         }
     }
 }

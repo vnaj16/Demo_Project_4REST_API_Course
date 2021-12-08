@@ -2,6 +2,7 @@
 using Demo_Project_4REST_API_Course.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Demo_Project_4REST_API_Course.Controllers
@@ -18,15 +19,19 @@ namespace Demo_Project_4REST_API_Course.Controllers
             _cycleService = cycleService;
         }
 
-        [HttpGet(Name = nameof(GetCycles))]
-        public IActionResult GetCycles()
+        [HttpGet(Name = nameof(GetAllCycles))]
+        [ProducesResponseType(200)]
+        public async Task<ActionResult<Collection<Cycle>>> GetAllCycles()
         {
-            var reponse = new
+            var cycles = await _cycleService.GetCyclesAsync();
+
+            var collection = new Collection<Cycle>
             {
-                href = Url.Link(nameof(GetCycles), null)
+                Self = Link.ToCollection(nameof(GetAllCycles)),
+                Value = cycles.ToArray()
             };
 
-            return Ok(reponse);
+            return collection;
         }
 
         [HttpGet("{cycleId}", Name = nameof(GetCycleById))]

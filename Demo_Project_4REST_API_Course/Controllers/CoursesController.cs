@@ -1,6 +1,7 @@
 ﻿using Demo_Project_4REST_API_Course.Models;
 using Demo_Project_4REST_API_Course.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Demo_Project_4REST_API_Course.Controllers
@@ -17,15 +18,22 @@ namespace Demo_Project_4REST_API_Course.Controllers
             _courseService = courseService;
         }
 
-        [HttpGet(Name = nameof(GetCourses))]
-        public IActionResult GetCourses()
+        [HttpGet(Name = nameof(GetAllCourses))]
+        [ProducesResponseType(200)]
+        public async Task<ActionResult<Collection<Course>>> GetAllCourses([FromQuery] PagingOptions pagingOptions= null)
         {
-            var reponse = new
+            var courses = await _courseService.GetCoursesAsync(pagingOptions);
+
+            var collection = new PagedCollection<Course>
             {
-                href = Url.Link(nameof(GetCourses), null)
+                Self = Link.ToCollection(nameof(GetAllCourses)),
+                Value = courses.Items.ToArray(),
+                Size = courses.TotalSize,
+                Offset = pagingOptions.Offset.Value,
+                Limit = pagingOptions.Limit.Value
             };
 
-            return Ok(reponse);
+            return collection;
         }
 
         [HttpGet("{courseId}", Name = nameof(GetcourseById))]
