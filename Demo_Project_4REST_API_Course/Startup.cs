@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Demo_Project_4REST_API_Course.Services;
 using Demo_Project_4REST_API_Course.Services.Interfaces;
 using Demo_Project_4REST_API_Course.Infrastructure;
+using Demo_Project_4REST_API_Course.Models;
 
 namespace Demo_Project_4REST_API_Course
 {
@@ -33,6 +34,7 @@ namespace Demo_Project_4REST_API_Course
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ControlNotasDbContext>(options => options.UseInMemoryDatabase("controlnotasdb"));
+            services.Configure<PagingOptions>(Configuration.GetSection("DefaultPagingOptions"));
 
             services.AddControllers(options =>
             {
@@ -41,7 +43,7 @@ namespace Demo_Project_4REST_API_Course
                 options.Filters.Add<LinkRewritingFilter>();
             });
 
-            services.AddScoped<ICourseService,CourseService>();
+            services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<ICycleService, CycleService>();
 
             services.AddRouting(options => options.LowercaseUrls = true);
@@ -64,6 +66,15 @@ namespace Demo_Project_4REST_API_Course
             services.AddSwaggerDocument();
             services.AddAutoMapper(
                 options => options.AddProfile<MappingProfile>());
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errorResponse = new ApiError(context.ModelState);
+                    return new BadRequestObjectResult(errorResponse);
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
