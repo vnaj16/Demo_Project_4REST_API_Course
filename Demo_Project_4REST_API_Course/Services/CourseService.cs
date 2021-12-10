@@ -31,23 +31,23 @@ namespace Demo_Project_4REST_API_Course.Services
             return mapper.Map<Course>(entity);
         }
 
-        public async Task<PagedResults<Course>> GetCoursesAsync(PagingOptions pagingOptions)
+        public async Task<PagedResults<Course>> GetCoursesAsync(PagingOptions pagingOptions, SortOptions<Course, CourseEntity> sortOptions)
         {
-            var coursesFromDb = await _controlNotasDbContext.Courses.ToArrayAsync();
+            IQueryable<CourseEntity> query = _controlNotasDbContext.Courses;
+            query = sortOptions.Apply(query);
 
-            List<Course> courses = new List<Course>();
-            var mapper = _mappingConfiguration.CreateMapper();
-            foreach (var course in coursesFromDb)
-            {
-                courses.Add(mapper.Map<Course>(course));
-            }
+            int size = await query.CountAsync();
+
+            var items = await query
+                .Skip(pagingOptions.Offset.Value)
+                .Take(pagingOptions.Limit.Value)
+                .ProjectTo<Course>(_mappingConfiguration)
+                .ToArrayAsync();
 
             var response = new PagedResults<Course>()
             {
-                Items = courses
-                    .Skip(pagingOptions.Offset.Value)
-                    .Take(pagingOptions.Limit.Value),
-                TotalSize = courses.Count()
+                Items = items,
+                TotalSize = size
             };
 
             return response;

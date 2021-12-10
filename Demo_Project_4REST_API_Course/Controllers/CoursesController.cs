@@ -23,12 +23,14 @@ namespace Demo_Project_4REST_API_Course.Controllers
         [HttpGet(Name = nameof(GetAllCourses))]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<ActionResult<Collection<Course>>> GetAllCourses([FromQuery] PagingOptions pagingOptions= null)
+        public async Task<ActionResult<Collection<Course>>> GetAllCourses(
+            [FromQuery] PagingOptions pagingOptions,
+            [FromQuery] SortOptions<Course,CourseEntity> sortOptions)
         {
             pagingOptions.Offset = pagingOptions.Offset ?? _defaultPagingOptions.Offset;
             pagingOptions.Limit = pagingOptions.Limit ?? _defaultPagingOptions.Limit;
 
-            var courses = await _courseService.GetCoursesAsync(pagingOptions);
+            var courses = await _courseService.GetCoursesAsync(pagingOptions, sortOptions);
 
             var collection = PagedCollection<Course>.Create(
                 Link.ToCollection(nameof(GetAllCourses)),
