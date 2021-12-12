@@ -31,9 +31,10 @@ namespace Demo_Project_4REST_API_Course.Services
             return mapper.Map<Course>(entity);
         }
 
-        public async Task<PagedResults<Course>> GetCoursesAsync(PagingOptions pagingOptions, SortOptions<Course, CourseEntity> sortOptions)
+        public async Task<PagedResults<Course>> GetCoursesAsync(PagingOptions pagingOptions, SortOptions<Course, CourseEntity> sortOptions, SearchOptions<Course, CourseEntity> searchOptions)
         {
             IQueryable<CourseEntity> query = _controlNotasDbContext.Courses;
+            query = searchOptions.Apply(query);
             query = sortOptions.Apply(query);
 
             int size = await query.CountAsync();

@@ -6,7 +6,7 @@ namespace Demo_Project_4REST_API_Course.Services
 {
     public interface ICourseService
     {
-        Task<PagedResults<Course>> GetCoursesAsync(PagingOptions pagingOptions, SortOptions<Course, CourseEntity> sortOptions);
+        Task<PagedResults<Course>> GetCoursesAsync(PagingOptions pagingOptions, SortOptions<Course, CourseEntity> sortOptions, SearchOptions<Course, CourseEntity> searchOptions);
         Task<Course> GetCourseAsync(int id);
     }
 }
