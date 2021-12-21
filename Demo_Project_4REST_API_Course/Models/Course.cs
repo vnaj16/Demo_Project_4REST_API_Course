@@ -17,5 +17,9 @@ namespace Demo_Project_4REST_API_Course.Models
         [Searchable]
         public double Promedio { get; set; }
         public int IdCiclo { get; set; }
+
+        public Form CourseForm { get; set; }
+
+        public Form CourseQuery { get; set; }
     }
 }

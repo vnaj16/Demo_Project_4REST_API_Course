@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using Demo_Project_4REST_API_Course.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,42 @@ namespace Demo_Project_4REST_API_Course.Services
             _controlNotasDbContext = controlNotasDbContext;
             _mappingConfiguration = mappingConfiguration;
         }
+
+        public async Task<int> CreateCourseAsync(CourseForm courseForm)
+        {
+            CourseEntity courseEntity = new CourseEntity()
+            {
+                Codigo = courseForm.Codigo,
+                Creditos = courseForm.Creditos,
+                IdCiclo = courseForm.IdCiclo,
+                Nombre = courseForm.Nombre,
+                Promedio = 0,
+                Id = new Random().Next(10, 20)
+            };
+
+            var entity = await _controlNotasDbContext.Courses.AddAsync(courseEntity);
+
+            var created = await _controlNotasDbContext.SaveChangesAsync();
+
+            if (created < 1)
+            {
+                throw new InvalidOperationException("Could not created the course");
+            }
+
+            return entity.Entity.Id;
+        }
+
+        public async Task DeleteCourseAsync(int courseId)
+        {
+            var course = await _controlNotasDbContext.Courses.SingleOrDefaultAsync(b=>b.Id == courseId);
+
+            if (course == null) return;
+
+            _controlNotasDbContext.Courses.Remove(course);
+
+            await _controlNotasDbContext.SaveChangesAsync();
+        }
+
         public async Task<Course> GetCourseAsync(int id)
         {
             var entity = await _controlNotasDbContext.Courses

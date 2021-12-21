@@ -43,5 +43,18 @@ namespace Demo_Project_4REST_API_Course.Models
                 Method = "GET",
                 Relations = new[] { "collection" }
             };
+
+        public static Link ToForm(
+    string routeName,
+    object routeValues = null,
+    string method = "POST",
+    params string[] relations)
+    => new Link
+    {
+        RouteName = routeName,
+        RouteValues = routeValues,
+        Method = method,
+        Relations = relations
+    };
     }
 }

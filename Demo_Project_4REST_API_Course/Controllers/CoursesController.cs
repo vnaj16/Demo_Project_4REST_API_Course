@@ -42,14 +42,34 @@ namespace Demo_Project_4REST_API_Course.Controllers
             return collection;
         }
 
-        [HttpGet("{courseId}", Name = nameof(GetcourseById))]
+        [HttpGet("{courseId}", Name = nameof(GetCourseById))]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
-        public async Task<ActionResult<Course>> GetcourseById(int courseId)
+        public async Task<ActionResult<Course>> GetCourseById(int courseId)
         {
             var course = await _courseService.GetCourseAsync(courseId);
             if (course == null) return NotFound();
             return Ok(course);
+        }
+
+        [HttpPost(Name = nameof(CreateCourse))]
+        [ProducesResponseType(201)]
+        public async Task<ActionResult> CreateCourse([FromBody] CourseForm courseForm)
+        {
+            //ACA PODRÍA TRAER EL CICLO DEL CURSO PARA VALIDAR QUE EXISTA, SINO, RETORNO UN 404
+
+            var courseId = await _courseService.CreateCourseAsync(courseForm);
+
+            return Created(Url.Link(nameof(CoursesController.GetCourseById), new { courseId }), null);
+        }
+
+
+        [HttpDelete("{courseId}", Name = nameof(DeleteCourseById))]
+        [ProducesResponseType(204)]
+        public async Task<IActionResult> DeleteCourseById(int courseId)
+        {
+            await _courseService.DeleteCourseAsync(courseId);
+            return NoContent();
         }
     }
 }
