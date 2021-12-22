@@ -1,4 +1,5 @@
-﻿using Demo_Project_4REST_API_Course.Models;
+﻿using Demo_Project_4REST_API_Course.Infrastructure;
+using Demo_Project_4REST_API_Course.Models;
 using Demo_Project_4REST_API_Course.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -23,11 +24,14 @@ namespace Demo_Project_4REST_API_Course.Controllers
         [HttpGet(Name = nameof(GetAllCourses))]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [ResponseCache(Duration = 30)]
         public async Task<ActionResult<Collection<Course>>> GetAllCourses(
             [FromQuery] PagingOptions pagingOptions,
             [FromQuery] SortOptions<Course,CourseEntity> sortOptions,
             [FromQuery] SearchOptions<Course, CourseEntity> searchOptions)
         {
+           //await Task.Delay(3000); //Put for caching test purposes
+
             pagingOptions.Offset = pagingOptions.Offset ?? _defaultPagingOptions.Offset;
             pagingOptions.Limit = pagingOptions.Limit ?? _defaultPagingOptions.Limit;
 
@@ -45,10 +49,18 @@ namespace Demo_Project_4REST_API_Course.Controllers
         [HttpGet("{courseId}", Name = nameof(GetCourseById))]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
+        [ResponseCache(Duration = 86400)]
+        [Etag]
         public async Task<ActionResult<Course>> GetCourseById(int courseId)
         {
             var course = await _courseService.GetCourseAsync(courseId);
             if (course == null) return NotFound();
+
+            if (!Request.GetEtagHandler().NoneMatch(course))
+            {
+                return StatusCode(304, course);
+            }
+
             return Ok(course);
         }
 

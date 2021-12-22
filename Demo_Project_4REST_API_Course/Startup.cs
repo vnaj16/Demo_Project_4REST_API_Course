@@ -75,6 +75,8 @@ namespace Demo_Project_4REST_API_Course
                     return new BadRequestObjectResult(errorResponse);
                 };
             });
+
+            services.AddResponseCaching();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,6 +102,8 @@ namespace Demo_Project_4REST_API_Course
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseResponseCaching();
 
             app.UseEndpoints(endpoints =>
             {
